@@ -1,0 +1,14 @@
+<a href="/">Home</a>
+
+<h1>Hi {{ person.name }}</h1>
+
+
+{% if liked %}
+  <form method="post" action="/person/{{ person.id }}/unlike">
+    <button type="submit" name="message" value="">Unlike 💔</button>
+  </form>
+{% else %}
+  <form method="post" action="/person/{{ person.id }}/like">
+   <button type="submit">Like ❤️</button>
+  </form>
+{% endif %}

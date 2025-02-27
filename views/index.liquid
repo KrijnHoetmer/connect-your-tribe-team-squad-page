@@ -1,9 +1,19 @@
+{% if loggedIn %}
+
+<header>
+  <p>Ingelogd als <strong>{{ loggedIn }}</strong></p>
+</header>
+
 <h1>Zet 'm op team {{ teamName }}!</h1>
 
 <h2>Huidige berichten</h2>
 
 {% for message in messages %}
 <p>{{ message.from }}: {{ message.text }} @{{ message.created | date: '%d-%m-%Y %H:%M' }}</p>
+<form method="post" action="/delete">
+  <input type="hidden" name="redirect" value="/">
+  <button type="submit" name="message" value="{{ message.id }}">Verwijder</button>
+</form>
 {% else %}
 <p>Er zijn nog geen berichten voor dit team.</p>
 {% endfor %}
@@ -20,3 +30,33 @@
   </label>
   <button type="submit">Verstuur</button>
 </form>
+
+<h2>Alle squads</h2>
+<ul>
+{% for squad in squads %}
+   <li><a href="/squad/{{ squad.name }}">{{ squad.name }}</a></li>
+{% endfor %}
+</ul>
+
+<h2>Alle teams</h2>
+<ul>
+{% for team in teams %}
+   <li><a href="/team/{{ team.team }}">{{ team.team }}</a></li>
+{% endfor %}
+</ul>
+
+<h2>Alle personen</h2>
+<ul>
+{% for person in persons %}
+   <li><a href="/person/{{ person.id }}">{{ person.name }}</a></li>
+{% endfor %}
+</ul>
+{% else %}
+
+  <form method="post" action="/login">
+    <label>Je naam: <input name="username"></label>
+    <button>Inloggen</button>
+  </form>
+
+{% endif %}
+

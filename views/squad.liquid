@@ -1,0 +1,38 @@
+<a href="/">Home</a>
+
+<h1>Hi {{ squad }}</h1>
+
+{% if liked %}
+  <form method="post" action="/squad/{{ squad }}/unlike">
+    <button type="submit" name="message" value="">Unlike 💔</button>
+  </form>
+{% else %}
+  <form method="post" action="/squad/{{ squad }}/like">
+   <button type="submit">Like ❤️</button>
+  </form>
+{% endif %}
+
+<h2>Huidige berichten</h2>
+
+{% for message in messages %}
+<p>{{ message.from }}: {{ message.text }} @{{ message.created | date: '%d-%m-%Y %H:%M' }}</p>
+<form method="post" action="/delete">
+  <input type="hidden" name="redirect" value="/squad/{{ squad }}">
+  <button type="submit" name="message" value="{{ message.id }}">Verwijder</button>
+</form>
+{% else %}
+<p>Er zijn nog geen berichten voor deze squad.</p>
+{% endfor %}
+
+<h2>Voeg een bericht toe</h2>
+<form method="post" action="/squad/{{ squad }}">
+  <label>
+    Naam:
+    <input type="text" name="from" required>
+  </label>
+  <label>
+    Bericht:
+    <textarea name="text" required></textarea>
+  </label>
+  <button type="submit">Verstuur</button>
+</form>

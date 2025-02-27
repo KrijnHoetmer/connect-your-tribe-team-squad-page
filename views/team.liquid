@@ -1,0 +1,10 @@
+<a href="/">Home</a>
+
+{% if rating %}
+ Huidige rating: {{ rating }}
+{% endif %}
+
+<form method="post" action="/team/{{ team }}/rate">
+  <label>Rating voor dit team: <input type="range" min="1" max="10" name="rating"{% if rating %} value="{{ rating }}"{% endif %}></label>
+  <button>Submit</button>
+</form>
