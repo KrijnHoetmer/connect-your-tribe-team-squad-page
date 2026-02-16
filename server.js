@@ -6,20 +6,20 @@ import { Liquid } from 'liquidjs';
 // Vul hier jullie team naam in
 const teamName = 'Rocket';
 
-
+// Dit is een fake login die je kunt gebruiken
 let loggedIn = false;
 
-
-// Haal alle eerstejaars squads uit de WHOIS API op van dit jaar (2024–2025)
+// Haal alle eerstejaars squads uit de WHOIS API op van dit jaar (2025–2026)
 const squadResponse = await fetch('https://fdnd.directus.app/items/squad?filter[cohort]=2526&filter[tribe][name]=FDND Jaar 1')
 
 // Lees van de response van die fetch het JSON object in, waar we iets mee kunnen doen
 const squadResponseJSON = await squadResponse.json()
 
-
+// Lees alle unieke teams in
 const teamResponse = await fetch('https://fdnd.directus.app/items/person/?fields=team&filter[team][_neq]=null&sort=team&groupBy=team')
 const teamResponseJSON = await teamResponse.json()
 
+// Lees alle eerstejaars personen in
 const personResponse = await fetch('https://fdnd.directus.app/items/person/?sort=name&fields=*,squads.squad_id.name,squads.squad_id.cohort&filter[squads][squad_id][tribe][name]=FDND Jaar 1&filter[squads][squad_id][cohort]=2526')
 const personResponseJSON = await personResponse.json()
 
