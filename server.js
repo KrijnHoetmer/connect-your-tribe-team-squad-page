@@ -11,7 +11,7 @@ let loggedIn = false;
 
 
 // Haal alle eerstejaars squads uit de WHOIS API op van dit jaar (2024–2025)
-const squadResponse = await fetch('https://fdnd.directus.app/items/squad?filter={"_and":[{"cohort":"2425"},{"tribe":{"name":"FDND Jaar 1"}}]}')
+const squadResponse = await fetch('https://fdnd.directus.app/items/squad?filter[cohort]=2526&filter[tribe][name]=FDND Jaar 1')
 
 // Lees van de response van die fetch het JSON object in, waar we iets mee kunnen doen
 const squadResponseJSON = await squadResponse.json()
@@ -20,7 +20,7 @@ const squadResponseJSON = await squadResponse.json()
 const teamResponse = await fetch('https://fdnd.directus.app/items/person/?fields=team&filter[team][_neq]=null&sort=team&groupBy=team')
 const teamResponseJSON = await teamResponse.json()
 
-const personResponse = await fetch('https://fdnd.directus.app/items/person/?sort=name&fields=*,squads.squad_id.name,squads.squad_id.cohort&filter={"_and":[{"squads":{"squad_id":{"tribe":{"name":"FDND Jaar 1"}}}},{"squads":{"squad_id":{"cohort":"2425"}}}]}')
+const personResponse = await fetch('https://fdnd.directus.app/items/person/?sort=name&fields=*,squads.squad_id.name,squads.squad_id.cohort&filter[squads][squad_id][tribe][name]=FDND Jaar 1&filter[squads][squad_id][cohort]=2526')
 const personResponseJSON = await personResponse.json()
 
 
@@ -37,7 +37,7 @@ app.use(express.urlencoded({extended: true}))
 
 
 app.get('/', async function (request, response) {
-  const messagesResponse = await fetch(`https://fdnd.directus.app/items/messages/?filter={"for":"Team ${teamName}"}`)
+  const messagesResponse = await fetch(`https://fdnd.directus.app/items/messages?filter[for]=Team ${teamName}`)
   const messagesResponseJSON = await messagesResponse.json()
 
   response.render('index.liquid', {
@@ -51,7 +51,7 @@ app.get('/', async function (request, response) {
 })
 
 app.post('/', async function (request, response) {
-  await fetch('https://fdnd.directus.app/items/messages/', {
+  await fetch('https://fdnd.directus.app/items/messages', {
     method: 'POST',
     body: JSON.stringify({
       for: `Team ${teamName}`,
@@ -68,7 +68,7 @@ app.post('/', async function (request, response) {
 
 app.get('/team/:teamName', async function(request, response) {
 
-   const ratingForTeamResponse = await fetch(`https://fdnd.directus.app/items/messages/?sort=-created&limit=1&filter={"for":"Team ${teamName} / Rating for Team ${request.params.teamName}"}`)
+   const ratingForTeamResponse = await fetch(`https://fdnd.directus.app/items/messages?sort=-created&limit=1&filter[for]=Team ${teamName} / Rating for Team ${request.params.teamName}`)
    const ratingForTeamResponseJSON = await ratingForTeamResponse.json()
 
    response.render('team.liquid', {
@@ -78,7 +78,7 @@ app.get('/team/:teamName', async function(request, response) {
 })
 
 app.post('/team/:teamName/rate', async function(request, response) {
-  await fetch('https://fdnd.directus.app/items/messages/', {
+  await fetch('https://fdnd.directus.app/items/messages', {
     method: 'POST',
     body: JSON.stringify({
       for: `Team ${teamName} / Rating for Team ${request.params.teamName}`,
@@ -95,10 +95,10 @@ app.post('/team/:teamName/rate', async function(request, response) {
 
 app.get('/squad/:squadName', async function (request, response) {
 
-  const messagesResponse = await fetch(`https://fdnd.directus.app/items/messages/?filter={"for":"Team ${teamName} / Squad ${request.params.squadName}"}`)
+  const messagesResponse = await fetch(`https://fdnd.directus.app/items/messages?filter[for]=Team ${teamName} / Squad ${request.params.squadName}`)
   const messagesResponseJSON = await messagesResponse.json()
 
-  const likesForSquadResponse = await fetch(`https://fdnd.directus.app/items/messages/?filter={"for":"Team ${teamName} / Squad ${request.params.squadName} / Like"}`)
+  const likesForSquadResponse = await fetch(`https://fdnd.directus.app/items/messages?filter[for]=Team ${teamName} / Squad ${request.params.squadName} / Like`)
   const likesForSquadResponseJSON = await likesForSquadResponse.json()
 
   response.render('squad.liquid', {
@@ -109,7 +109,7 @@ app.get('/squad/:squadName', async function (request, response) {
 })
 
 app.post('/squad/:squadName', async function (request, response) {
-  await fetch('https://fdnd.directus.app/items/messages/', {
+  await fetch('https://fdnd.directus.app/items/messages', {
     method: 'POST',
     body: JSON.stringify({
       for: `Team ${teamName} / Squad ${request.params.squadName}`,
@@ -125,7 +125,7 @@ app.post('/squad/:squadName', async function (request, response) {
 })
 
 app.post('/squad/:squadName/like', async function (request, response) {
-  await fetch('https://fdnd.directus.app/items/messages/', {
+  await fetch('https://fdnd.directus.app/items/messages', {
     method: 'POST',
     body: JSON.stringify({
       for: `Team ${teamName} / Squad ${request.params.squadName} / Like`,
@@ -142,7 +142,7 @@ app.post('/squad/:squadName/like', async function (request, response) {
 
 app.post('/squad/:squadName/unlike', async function (request, response) {
 
-  const likesForSquadResponse = await fetch(`https://fdnd.directus.app/items/messages/?filter={"for":"Team ${teamName} / Squad ${request.params.squadName} / Like"}`)
+  const likesForSquadResponse = await fetch(`https://fdnd.directus.app/items/messages?filter[for]=Team ${teamName} / Squad ${request.params.squadName} / Like`)
   const likesForSquadResponseJSON = await likesForSquadResponse.json()
   const likesForSquadResponseID = likesForSquadResponseJSON.data[0].id
 
@@ -165,7 +165,7 @@ app.get('/person/:id', async function(request, response) {
   const personDetailResponse = await fetch('https://fdnd.directus.app/items/person/' + request.params.id)
   const personDetailResponseJSON = await personDetailResponse.json()
 
-  const likesForPersonResponse = await fetch(`https://fdnd.directus.app/items/messages/?filter={"for":"Team ${teamName} / Person ${request.params.id} / Like"}`)
+  const likesForPersonResponse = await fetch(`https://fdnd.directus.app/items/messages?filter[for]=Team ${teamName} / Person ${request.params.id} / Like`)
   const likesForPersonResponseJSON = await likesForPersonResponse.json()
 
   response.render('person.liquid', {
@@ -176,7 +176,7 @@ app.get('/person/:id', async function(request, response) {
 
 
 app.post('/person/:id/like', async function (request, response) {
-  await fetch('https://fdnd.directus.app/items/messages/', {
+  await fetch('https://fdnd.directus.app/items/messages', {
     method: 'POST',
     body: JSON.stringify({
       for: `Team ${teamName} / Person ${request.params.id} / Like`,
@@ -193,7 +193,7 @@ app.post('/person/:id/like', async function (request, response) {
 
 app.post('/person/:id/unlike', async function (request, response) {
 
-  const likesForPersonResponse = await fetch(`https://fdnd.directus.app/items/messages/?filter={"for":"Team ${teamName} / Person ${request.params.id} / Like"}`)
+  const likesForPersonResponse = await fetch(`https://fdnd.directus.app/items/messages?filter[for]=Team ${teamName} / Person ${request.params.id} / Like`)
   const likesForPersonResponseJSON = await likesForPersonResponse.json()
   const likesForPersonResponseID = likesForPersonResponseJSON.data[0].id
 
